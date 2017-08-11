@@ -52,18 +52,23 @@ if [ "$XUSE_FPM" = "true" ]; then
     mkdir -p tmp/$OBF_PROJECT_NAME
     pushd tmp/$OBF_PROJECT_NAME
     tar xvjf $OBF_DROP_DIR/$OBF_PROJECT_NAME/jdk$FILENAME_PREFIX-$OBF_BASE_ARCH-$OBF_BUILD_NUMBER-$OBF_BUILD_DATE.tar.bz2
-    XDEST_DIR=opt/obuildfactory/$PACKAGE_NAME-$OBF_JDK_MODEL$FILENAME_PREFIX
+    XDEST_DIR=usr/lib64/jvm/openjdk-9
     rm -rf $XDEST_DIR
     mkdir -p $XDEST_DIR
     mv jdk/* $XDEST_DIR
 
     rm -rf *.$XPACKAGE_MODE
     fpm --verbose -s dir -t $XPACKAGE_MODE -n $OBF_PROJECT_NAME$FILENAME_PREFIX -v "1.9.0-$OBF_BUILD_NUMBER" --rpm-auto-add-directories \
-    --category language -m "Henri Gomez <henri.gomez@gmail.com>" \
-    --url https://github.com/hgomez/obuildfactory/ \
+    --category language -m "Flavian Manea <flavian.manea@rinftech.com>" \
+    --url https://github.com/fmanea/obuildfactory \
     --license "GPL-2.0" \
     --description "$PACKAGE_DESCRIPTION$DESCRIPTION_ADDON" \
-    -C . opt
+    --depends update-alternatives \
+    --after-install ../../../addRpmSymbolicLinks.sh \
+    --after-remove ../../../removeRpmSymbolicLinks.sh \
+    --exclude usr/lib64/jvm/openjdk-9/man \
+    --exclude usr/lib64/jvm/openjdk-9/demo \
+    -C . usr/lib64/jvm/ 
 
     mv *.$XPACKAGE_MODE $OBF_DROP_DIR/$OBF_PROJECT_NAME
 
